@@ -1,0 +1,2767 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Leia-me quando precisar de mim</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Inter&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #b55a2a;
+      --paper: #fffaf6;
+      --text: #3a2a23;
+      --accent: #8a3e1f;
+      --soft: #f3e6de;
+    }
+
+    html.dark-mode {
+      --bg: #3a2a23;
+      --paper: #2a1f1a;
+      --text: #f3e6de;
+      --accent: #d4a574;
+      --soft: #4a3a33;
+    }
+
+    html.dark-mode body {
+      background: linear-gradient(180deg, #2a1f1a, #3a2a23);
+    }
+
+    html.dark-mode textarea {
+      background: #3a2f2a;
+      border-color: #5a4a45;
+      color: #f3e6de;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(180deg, #a54f27, #c06a3b);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 32px 12px;
+    }
+
+    .book {
+      background: var(--paper);
+      max-width: 900px;
+      width: 100%;
+      border-radius: 14px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.35);
+      overflow: hidden;
+    }
+
+    .cover {
+      background: var(--bg);
+      color: #f6eae3;
+      padding: 90px 40px;
+      text-align: center;
+    }
+
+    .cover h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      margin: 0;
+    }
+
+    .intro, .topics {
+      padding: 32px;
+    }
+
+    .intro {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .intro p {
+      line-height: 1.8;
+      color: var(--text);
+      opacity: 0.95;
+    }
+
+    details {
+      background: var(--soft);
+      border-radius: 10px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 20px;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+
+    .content {
+      padding: 20px;
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .blank {
+      border-top: 1px dashed #c9b2a6;
+      margin-top: 12px;
+      padding-top: 12px;
+      font-style: italic;
+      opacity: 0.8;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 90px;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #d6c1b6;
+      font-family: 'Inter', sans-serif;
+      resize: vertical;
+      background: #fffdfb;
+    }
+
+    button {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-top: 10px;
+    }
+
+    footer {
+      padding: 40px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #6b4c40;
+    }
+
+    .postscript {
+      padding: 20px 40px;
+      text-align: right;
+      font-size: 0.85rem;
+      color: #8a3e1f;
+      font-style: italic;
+      opacity: 0.85;
+    }
+
+    button.theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+    }
+
+    button.theme-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    }
+
+    button.theme-toggle:active {
+      transform: scale(0.95);
+    }
+
+    html.dark-mode button.theme-toggle {
+      background: rgba(58, 42, 35, 0.95);
+      color: #d4a574;
+    }
+
+    .breathing-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(2px);
+    }
+
+    .breathing-modal.active {
+      display: flex;
+    }
+
+    .breathing-container {
+      background: var(--paper);
+      border-radius: 20px;
+      padding: 60px 40px;
+      text-align: center;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      position: relative;
+    }
+
+    .breathing-circle {
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 30px;
+      border-radius: 50%;
+      background: var(--soft);
+      border: 3px solid var(--accent);
+      animation: breathing 8s ease-in-out infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes breathing {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.6;
+      }
+      50% {
+        transform: scale(1.3);
+        opacity: 0.9;
+      }
+    }
+
+    .breathing-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--text);
+      margin: 20px 0;
+      min-height: 40px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .breathing-text.active {
+      opacity: 1;
+    }
+
+    .breathing-message {
+      font-size: 0.95rem;
+      color: var(--text);
+      margin-top: 30px;
+      line-height: 1.6;
+      opacity: 0.85;
+      font-style: italic;
+    }
+
+    .breathing-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: var(--accent);
+      opacity: 0.6;
+      transition: opacity 0.3s;
+      outline: none;
+      text-decoration: none;
+    }
+
+    .breathing-close:hover {
+      opacity: 1;
+    }
+
+    .breathing-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: linear-gradient(135deg, var(--bg), var(--accent));
+      color: #f6eae3;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 999;
+    }
+
+    .breathing-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    }
+
+    .breathing-button:active {
+      transform: translateY(0);
+    }
+
+    html.dark-mode .breathing-button {
+      background: linear-gradient(135deg, #4a3a33, #d4a574);
+    }
+
+    html.dark-mode .breathing-container {
+      background: var(--paper);
+    }
+
+    html.dark-mode .breathing-circle {
+      background: var(--soft);
+      border-color: var(--accent);
+    }
+
+    /* Daily Quote Notification */
+    .daily-quote-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--bg), var(--accent));
+      color: #f6eae3;
+      padding: 14px 20px;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      font-size: 0.95rem;
+      max-width: 90%;
+      max-width: clamp(300px, 90%, 520px);
+      text-align: center;
+      font-style: italic;
+      line-height: 1.6;
+      z-index: 1001;
+      animation: slideDown 0.5s ease-out;
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-right: 12px;
+    }
+
+    .daily-quote-text {
+      flex: 1;
+    }
+
+    .daily-quote-close {
+      background: none;
+      border: none;
+      color: #f6eae3;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: opacity 0.3s;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.8;
+      outline: none;
+      text-decoration: none;
+    }
+
+    .daily-quote-close:hover {
+      opacity: 1;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+    }
+
+    .daily-quote-notification.closing {
+      animation: slideUp 0.4s ease-out forwards;
+    }
+
+    html.dark-mode .daily-quote-notification {
+      background: linear-gradient(135deg, #4a3a33, #d4a574);
+      color: #2a1f1a;
+    }
+
+    html.dark-mode .daily-quote-close {
+      color: #2a1f1a;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="dailyQuoteNotification" class="daily-quote-notification">
+  <span class="daily-quote-text" id="dailyQuoteText"></span>
+  <button class="daily-quote-close" onclick="fecharNotificacao()" title="Fechar">✕</button>
+</div>
+
+<button class="theme-toggle" onclick="toggleTheme()" title="Alternar tema claro/escuro">🌙</button>
+
+<button class="breathing-button" onclick="openBreathing()" title="Exercício de respiração guiada">🌬️ Respire comigo</button>
+
+<div id="breathingModal" class="breathing-modal">
+  <div class="breathing-container">
+    <button class="breathing-close" onclick="closeBreathing()">✕</button>
+    <div class="breathing-circle"></div>
+    <div class="breathing-text" id="breathingText"></div>
+    <div class="breathing-message">Está tudo bem desacelerar.</div>
+  </div>
+</div>
+
+<main class="book">
+
+  <section class="cover">
+    <h1>Leia-me<br>quando precisar<br>de mim</h1>
+    <p>Abra apenas o que fizer sentido hoje</p>
+  </section>
+
+  <section class="intro">
+    <p>
+      Este não é um livro para ser lido em ordem.  
+      É um lugar seguro para dias específicos.  
+      Quando algo apertar por dentro, escolha um título e fique ali um pouco.
+    </p>
+  </section>
+
+  <section class="topics">
+
+    <!-- MODELO DE CAPÍTULO -->
+    <details>
+      <summary>01 · Leia-me quando receber esse livro</summary>
+      <div class="content">
+        <div class="blank">
+          Se você está lendo isso agora, talvez esteja se perguntando por que eu fiz isso. A resposta é simples e complicada ao mesmo tempo... mas é porque o que vivemos foi real. Porque você foi importante. Porque ir embora não apaga sentimento. Este livro não quer te prender ao passado, mas também não quer fingir que nada existiu. Use como um lugar de pausa, conforto e calmaria. Tudo isso é só um cuidado que eu não quis levar embora comigo. Nós não estamos mais juntos, mas o que existiu entre nós foi real o suficiente para merecer respeito e em algum momento da nossa história, houve cuidado genuíno. E cuidado de verdade não desaparece só porque as pessoas seguem caminhos diferentes. Este livro é um lugar neutro, seguro, sem exigências. Use isso quando precisar respirar fundo. Aqui será ofericido companhia silenciosa quando precisar.
+      </div>
+    </details>
+
+  <details>
+      <summary>02 · Leia-me quando estiver tendo um dia ruim</summary>
+      <div class="content">
+        <div class="blank">
+          Se hoje tudo parece mais pesado do que deveria, eu queria que você soubesse, antes de qualquer coisa, que isso acontece. Não porque você falhou, não porque tomou decisões erradas, não porque é fraco. Acontece porque existem dias assim. Dias em que o mundo exige mais do que a gente tem para dar, dias em que até respirar parece um esforço consciente. Talvez nada específico tenha dado errado, e mesmo assim tudo esteja errado por dentro. Ou talvez tenha sido uma sequência de pequenas coisas, um comentário atravessado, um silêncio estranho, um cansaço que já vinha de antes. Seja qual for o motivo, você não precisa se explicar para ninguém hoje. Nem para mim. Nem para você mesmo. Em dias ruins, eu queria que você se permitisse diminuir o ritmo sem culpa. Não é desistir. É respeitar seus limites. Você não precisa resolver a vida inteira hoje, nem entender tudo o que está sentindo. Às vezes, o máximo que dá para fazer é atravessar o dia com cuidado, como quem segura algo frágil nas mãos. Se puder, faça algo simples. Algo pequeno. Tome água. Abra a janela. Deite um pouco. Respire fundo algumas vezes, mesmo que pareça inútil no começo. Essas coisas não consertam tudo, eu sei. Mas ajudam o peso a não esmagar. E se em algum momento você pensar que está sozinho nisso, lembre-se de que você já foi cuidado. Já foi visto. Já foi importante. Isso não desaparece só porque hoje é difícil. Mesmo longe, mesmo em silêncio, eu ainda desejo que você fique bem. De verdade. Dias ruins não definem quem você é. Eles só passam por você. E você vai passar por eles também, do seu jeito, no seu tempo.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-02"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('02')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="02 · Leia-me quando estiver tendo um dia ruim" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+        <details>
+      <summary>03 · Leia-me quando quiser se sentir importante</summary>
+      <div class="content">
+        <div class="blank">
+          Se hoje você acordou com aquela sensação estranha de ser só mais um no meio de tudo, de passar despercebido, de não fazer tanta diferença assim… vem cá. Fica um pouco comigo nessas palavras.
+
+Ser importante não é sobre ser o centro das atenções. Não é sobre ser o melhor, o mais forte, o mais admirado. Ser importante é algo muito mais silencioso. É sobre ter deixado marcas em alguém. É sobre ter sido abrigo em algum momento. É sobre ter feito diferença sem nem perceber.
+
+Você já foi importante para mim de formas que talvez nunca tenham sido ditas em voz alta. Importante nos detalhes, nos gestos simples, nas conversas que não tinham hora para acabar. Importante nos dias comuns, nos dias difíceis, nos dias em que o mundo parecia pesado demais. Importante por ser quem você é, não por fazer algo extraordinário.
+
+Às vezes a gente esquece disso porque a vida corre, as pessoas mudam, os caminhos se separam. E aí parece que tudo o que fomos vai se apagando devagar. Mas não apaga. O que foi vivido de verdade não vira nada. Vira história. Vira memória. Vira parte de quem somos.
+
+Você importa porque você sente. Porque você tenta. Porque você se importa com os outros, mesmo quando está cansado. Porque você carrega coisas por dentro que ninguém vê, e ainda assim continua seguindo. Isso não é pouco. Isso é enorme.
+
+Se em algum momento você se sentir invisível, lembra: existir já é um ato de coragem. E existir do jeito que você existe, com sensibilidade, com falhas, com humanidade, é algo raro e valioso.
+
+Mesmo de longe, mesmo em outra fase da vida, eu ainda reconheço o valor que você tem. Não como uma lembrança presa ao passado, mas como uma verdade que continua viva: você é alguém que importa. De verdade.
+
+E sempre que precisar sentir isso de novo, volta aqui. Essas palavras estão aqui para te lembrar do que talvez o mundo, às vezes, esqueça de dizer.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-03"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('03')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="03 · Leia-me quando quiser se sentir importante" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+
+
+    <details>
+      <summary>04 ·Leia-me quando precisar sorrir</summary>
+      <div class="content">
+        <div class="blank">
+          <div>Quero que saiba que você é a única pessoa que conseguiria me tirar de camazotz.</div>
+          <div>Eu adoro a sua força, a sua capacidade, e quero que saiba que...você sempre terá um cantinho no meu coração.</div>
+          <div>Não importa quanto tempo passe... não importa aonde eu esteja... ou o que eu esteja fazendo. Sempre lembrarei de você.</div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-04"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('04')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="04 · Leia-me quando precisar sorrir" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+
+
+    <details>
+      <summary>05 · Leia-me quando não conseguir dormir</summary>
+      <div class="content">
+        <div class="blank">
+          Se você está acordado agora, provavelmente o mundo ficou silencioso demais e a sua cabeça resolveu falar alto. À noite é assim mesmo: tudo que durante o dia parecia controlável ganha volume, peso, urgência. Pensamentos antigos voltam, conversas se repetem, decisões passadas pedem revisão. É cansativo. Eu sei. Quero que você saiba, antes de qualquer coisa, que não há nada de errado com você por estar acordado agora. Não significa fraqueza, nem ansiedade fora de controle, nem que algo está “quebrado” aí dentro. Significa apenas que você é humano e que, em algum nível, está tentando dar conta da própria vida. As madrugadas costumam mentir. Elas fazem parecer que tudo precisa ser resolvido agora, que todas as respostas são urgentes, que cada dúvida define o futuro inteiro. Mas não é verdade. Nada de realmente importante precisa ser decidido enquanto o corpo está cansado e o mundo dorme. Amanhã, com luz, café, rotina e barulho, quase tudo perde metade do peso. Se puder, tenta não brigar com o fato de estar acordado. Quanto mais a gente luta contra o sono, mais ele se esconde. Deita, respira fundo algumas vezes, mesmo que pareça inútil. Deixa os pensamentos passarem como se fossem carros numa estrada: você vê, reconhece, mas não entra em nenhum deles. Talvez agora seja só um momento de pausa, não um problema a ser resolvido. Um intervalo estranho entre um dia que acabou e outro que ainda não começou. E tudo bem se você estiver cansado demais para fazer algo produtivo com isso. Você não precisa aproveitar a madrugada, nem tirar lições profundas dela. Só atravessar já basta. Se em algum momento você sentir um aperto no peito, lembra disso: você já passou por noites assim antes. E mesmo sem perceber quando, você dormiu. Você acordou. O dia seguiu. Isso também vai acontecer agora, mesmo que pareça distante. Eu espero que, depois de um tempo, o corpo canse de resistir e descanse. Mas se o sono demorar, tudo bem também. Você não está falhando. Você só está vivendo uma noite difícil, e noites difíceis passam, uma respiração de cada vez.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-05"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('05')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="05 · Leia-me quando não conseguir dormir" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+
+
+
+    <details>
+      <summary>06 · Leia-me quando estiver se sentindo inseguro</summary>
+      <div class="content">
+        <div class="blank">
+          Se hoje você está se sentindo menor do que realmente é, se questionando demais, duvidando de si, das suas escolhas ou do seu próprio valor… eu queria que você respirasse fundo antes de qualquer coisa. Não para “melhorar” rápido, não para fingir força, mas só para existir um pouco mais devagar.
+
+A insegurança não aparece em quem é fraco. Ela aparece em quem se importa. Em quem sente. Em quem tenta fazer as coisas direito, mesmo sem ter todas as respostas. Ela surge quando o coração está aberto demais para o mundo, e o mundo, às vezes, pesa.
+
+Você não é definido pelos seus medos. Você é muito maior do que esse momento de dúvida. O fato de você questionar, refletir, sentir, já mostra o quanto você é profundo. Pessoas vazias não se sentem inseguras. Pessoas reais, sim.
+
+Talvez agora sua mente esteja listando tudo o que você acha que fez errado. Talvez esteja comparando sua caminhada com a dos outros. Talvez esteja achando que deveria estar “mais longe”, “melhor”, “mais resolvido”. Mas a vida não é uma corrida. É um processo. E você está exatamente onde precisa estar para continuar crescendo.
+
+Quero que você se lembre de algo simples: você já enfrentou coisas difíceis antes. Já teve dias em que achou que não ia conseguir, e conseguiu. Mesmo sem perceber, mesmo com medo, mesmo cansado. A força não é ausência de insegurança. A força é continuar, apesar dela.
+
+Seja gentil consigo agora. Fale com você como falaria com alguém que você ama. Com cuidado. Com paciência. Com carinho. Você não precisa se provar para ninguém hoje. Você não precisa ser impecável. Você só precisa ser você.
+
+Mesmo em outra fase da vida, mesmo seguindo caminhos diferentes, eu ainda desejo que você se veja com mais amor do que está conseguindo agora. Porque eu vi quem você é quando você não estava olhando: alguém sensível, intenso, verdadeiro. E isso é algo bonito de se ser.
+
+A insegurança vai passar.
+O que você é, não.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-06"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('06')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="06 · Leia-me quando estiver se sentindo inseguro" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+
+
+
+
+
+    <details>
+      <summary>07 · Leia-me quando estiver se sentindo perdido e precisar de uma luz</summary>
+      <div class="content">
+        <div class="blank">
+          Se agora tudo parece confuso, como se você estivesse andando sem saber muito bem para onde ir, eu quero que você saiba: não há nada de errado em se sentir assim. A vida nem sempre oferece mapas claros. Às vezes ela só nos entrega caminhos borrados, cheios de dúvidas, silêncios e perguntas sem resposta.
+
+Sentir-se perdido não significa que você está fracassando. Significa que você está em movimento. Significa que algo dentro de você está mudando, procurando um novo lugar para existir, um novo jeito de seguir. O desconforto vem porque o velho já não serve mais, mas o novo ainda não se mostrou por completo.
+
+Quero que você se lembre de uma coisa importante: você não precisa enxergar o caminho inteiro para dar o próximo passo. Às vezes, tudo o que a gente precisa é de uma pequena luz. Um gesto simples. Um pensamento mais gentil. Um dia vivido com menos cobrança.
+
+Você já encontrou saídas antes, mesmo quando achou que não conseguiria. Já atravessou fases difíceis, mesmo sem ter certeza de nada. E, de algum jeito, chegou até aqui. Isso diz muito sobre você. Sobre a sua força silenciosa. Sobre a sua capacidade de continuar, mesmo quando tudo parece escuro.
+
+Se hoje você não souber o que fazer com o futuro, tudo bem. Fique no agora. Respire. Cuide do que está ao seu alcance. O resto se organiza aos poucos. A vida não exige pressa, ela pede presença.
+
+Mesmo longe, mesmo em outro capítulo da história, eu ainda desejo que você encontre clareza, paz e leveza no seu caminho. Não porque eu precise fazer parte dele, mas porque você merece se sentir bem enquanto o constrói.
+
+Você não está sem rumo.
+Você só está entre um lugar e outro.
+E toda travessia, por mais confusa que pareça, leva a algum lugar bonito.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-07"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('07')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="07 · Leia-me quando estiver se sentindo perdido e precisar de uma luz" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+
+
+
+
+
+    <details>
+      <summary>08 · Leia-me quando estiver se sentindo sozinho</summary>
+      <div class="content">
+        <div class="blank">
+          Se agora o silêncio está alto demais, se o mundo parece distante e o peito um pouco vazio, eu queria que você soubesse que a solidão não te define. Ela é só um estado, não quem você é. Às vezes ela chega sem pedir licença, mesmo quando a gente está cercado de pessoas, mesmo quando tudo parece “normal” por fora.
+
+Sentir-se sozinho não significa que você é esquecível, invisível ou pouco importante. Significa apenas que o seu coração está pedindo conexão, cuidado, presença. E isso não é fraqueza, isso é ser humano.
+
+Existem solidões que vêm do cansaço, outras que vêm da mudança, outras que vêm da saudade de um tempo que já passou. Todas elas doem de um jeito diferente, mas nenhuma delas precisa ser atravessada com dureza. Você pode se tratar com mais gentileza agora. Pode diminuir o ritmo. Pode se permitir sentir sem se julgar.
+
+Mesmo quando parece que ninguém está olhando, você continua sendo alguém que carrega histórias, sentimentos, memórias e importância. Você já foi abrigo, riso, companhia, conforto. Isso não desaparece só porque hoje o dia está mais quieto.
+
+Se puder, faz algo pequeno por você. Uma música. Uma luz acesa. Um café quente. Um momento de cuidado consigo mesmo. Às vezes, a solidão diminui quando o corpo se sente um pouco mais acolhido.
+
+E se o coração insistir em se sentir vazio, lembra disso: você já foi amado de verdade. Já foi visto. Já foi importante. Essas marcas ficam, mesmo quando as pessoas seguem caminhos diferentes.
+
+Você não está sozinho no mundo, mesmo quando se sente assim por dentro.
+E sempre que precisar de um lugar calmo para descansar, essas palavras estarão aqui, te lembrando que você importa, mesmo nos dias silenciosos.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-08"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('08')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="08 · Leia-me quando estiver se sentindo sozinho" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+
+
+
+    <details>
+      <summary>09 · Leia-me quando estiver preocupado com algo</summary>
+      <div class="content">
+        <div class="blank">
+          Se a sua mente está girando em círculos agora, tentando prever tudo, resolver tudo, controlar tudo… eu queria te pedir para parar um pouquinho. Não para ignorar o que você sente, mas para respirar dentro disso. Preocupação nasce do cuidado. Ela aparece quando algo importa para você. E isso, por si só, já diz muito sobre o seu coração.
+
+Talvez você esteja pensando em algo que ainda nem aconteceu. Talvez esteja revivendo uma conversa, um problema, uma decisão que parece grande demais para carregar sozinho. A cabeça, quando se preocupa, costuma exagerar os cenários. Ela cria histórias, antecipa dores, transforma possibilidades em certezas. Mas a maioria das coisas não acontece do jeito que a nossa ansiedade imagina.
+
+Você não precisa ter todas as respostas agora. Não precisa resolver tudo hoje. Algumas preocupações só pedem tempo. Outras pedem descanso. E muitas delas se tornam menores quando a gente para de enfrentá-las sozinho dentro da própria cabeça.
+
+Lembra de quantas coisas você já superou? Quantas fases difíceis ficaram para trás? Quantos momentos você achou que não ia conseguir atravessar, e atravessou. A sua história já é uma prova silenciosa de que você sabe lidar com mais do que imagina.
+
+Seja gentil consigo agora. Em vez de se cobrar por não ter tudo sob controle, reconheça o quanto você está tentando. O quanto você se importa. O quanto você sente. Isso não é fraqueza. Isso é sensibilidade.
+
+Mesmo longe, mesmo em outro momento da vida, eu ainda desejo que você encontre calma dentro de si. Que consiga confiar um pouco mais no tempo, na sua força, no seu próprio caminho.
+
+A preocupação pode até estar aqui agora.
+Mas ela não precisa morar em você.
+Ela passa.
+E você fica, mais forte, mais inteiro, mais humano.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-09"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('09')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="09 · Leia-me quando estiver preocupado com algo" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+
+
+
+
+    <details>
+      <summary>10 · Leia-me quando estiver precisando de motivação</summary>
+      <div class="content">
+        <div class="blank">
+          Se hoje você acordou sem muita vontade de seguir, sem energia, sem aquele impulso que normalmente te move… tudo bem. Nem todo dia nasce com luz. Alguns dias só nascem com cansaço. E mesmo assim, eles ainda contam.
+
+Motivação não é uma força constante. Ela vai e volta. Às vezes ela some justamente quando a gente mais precisa. E quando isso acontece, não significa que você perdeu o rumo. Significa apenas que você é humano, sentindo o peso das coisas que carrega.
+
+Você não precisa se transformar em alguém diferente para continuar. Não precisa ser mais forte, mais produtivo, mais confiante do que já é. Você só precisa dar um passo pequeno. Um gesto simples. Uma tentativa gentil. O resto vem depois.
+
+Talvez agora você esteja olhando para tudo o que ainda falta fazer e se sentindo sobrecarregado. Mas olha também para tudo o que você já fez. Para tudo o que você já superou. Para os dias em que você continuou mesmo sem vontade. Isso também é força. Isso também é coragem.
+
+Você não precisa correr. Não precisa provar nada. Não precisa vencer o mundo hoje. Às vezes, a maior vitória é só não desistir de si mesmo.
+
+Mesmo em outra fase da vida, mesmo em outro caminho, eu ainda acredito na pessoa que você é. Na sua sensibilidade. Na sua capacidade de crescer. No seu jeito de sentir o mundo. Você não é feito de pressa, você é feito de profundidade.
+
+Se a motivação não vier agora, tudo bem. Comece pelo cuidado. Pelo respeito consigo. Pela gentileza. A motivação costuma aparecer quando o coração se sente seguro.
+
+E sempre que você sentir que está ficando sem força, lembra:
+Você não precisa ser perfeito para continuar.
+Você só precisa ser você.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+
+          id="comentario-10"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('10')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="10 · Leia-me quando estiver precisando de motivação" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+
+
+    <details>
+      <summary>11 · Leia-me quando for seu aniversário</summary>
+      <div class="content">
+        <div class="blank">
+          Hoje é o seu dia. E mesmo que a vida esteja diferente, mesmo que os caminhos tenham mudado, eu ainda quero que você se sinta celebrado. Não por grandes festas, nem por expectativas perfeitas, mas pelo simples fato de você existir. De você ser quem é.
+
+Aniversários não são só sobre o passar dos anos. São sobre tudo o que você viveu dentro deles. Sobre as fases que atravessou, as dores que superou, as alegrias que sentiu, os aprendizados que carregou. Cada ano acrescentou algo em você, mesmo os mais difíceis.
+
+Talvez hoje você acorde pensando em quem está por perto, em quem ficou pelo caminho, em como as coisas mudaram. E tudo bem sentir isso. Mudança não apaga a importância dos momentos vividos. Ela só mostra que a vida continua se transformando, assim como você.
+
+Quero que, hoje, você se trate com carinho. Que se permita algo simples que te faça bem. Um momento só seu. Um sorriso sem pressa. Um pensamento mais leve. Você merece isso, não só hoje, mas todos os dias.
+
+Mesmo de longe, mesmo em outra fase da nossa história, eu ainda desejo coisas boas para você. Desejo que você se sinta em paz com quem está se tornando. Que sinta orgulho da sua trajetória, mesmo com as imperfeições. Que continue crescendo do seu jeito.
+
+Que este novo ano de vida te traga mais calma do que cobrança, mais leveza do que peso, mais presença do que pressa. E que você nunca esqueça: existir já é um motivo para ser celebrado.
+
+Feliz aniversário.
+Que você se sinta acolhido hoje, e em todos os dias que ainda virão.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-11"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('11')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="11 · Leia-me quando for seu aniversário" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    
+     <details>
+      <summary>12 · Leia-me quando for Natal</summary>
+      <div class="content">
+        <div class="blank">
+          Talvez hoje o mundo esteja mais iluminado, as pessoas falando de união, de amor, de família, de encontros. E talvez, por dentro, você esteja sentindo algo diferente disso. Um misto de lembranças, mudanças, ausências, silêncios. O Natal costuma despertar tudo o que a gente guarda no coração, o que aquece e o que aperta.
+
+Quero que você saiba que não existe um jeito certo de viver essa data. Você não precisa estar eufórico, nem rodeado de gente, nem vivendo um filme perfeito. Você só precisa estar inteiro consigo mesmo. O resto é detalhe.
+
+O Natal não é só sobre quem está ao nosso redor, mas sobre aquilo que a gente carrega dentro. Sobre os afetos que marcaram a nossa história. Sobre as pessoas que, de alguma forma, deixaram luz na nossa vida, mesmo que hoje estejam em outros caminhos.
+
+Se hoje bater uma saudade, deixa ela existir sem culpa. Se vier um sorriso, acolhe ele também. Você não precisa escolher um único sentimento. O coração é grande o suficiente para sentir tudo.
+
+Desejo que, hoje, você se permita um momento de calma. Um gesto de cuidado consigo. Uma pausa para respirar e lembrar que você é digno de amor, de acolhimento e de paz, independentemente de como este Natal esteja sendo.
+
+Mesmo longe, mesmo com a vida diferente, o desejo de que você fique bem continua aqui. Não como um peso, não como uma cobrança, mas como um carinho silencioso que atravessa o tempo.
+
+Que o seu Natal seja, acima de tudo, um dia de gentileza com você mesmo.
+E que a luz que você procura fora, também exista dentro.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-12"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('12')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="12 · Leia-me quando for Natal" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+
+    <details>
+      <summary>13 · Leia-me quando for Ano Novo</summary>
+      <div class="content">
+        <div class="blank">
+          Um novo ano sempre chega carregado de promessas, expectativas, planos que ainda nem existem direito. As pessoas falam de recomeços, de metas, de mudanças grandes. Mas eu queria te lembrar de algo mais simples e mais verdadeiro: você não precisa se transformar em outra pessoa para merecer um ano bonito. Você já é suficiente do jeito que é.
+
+Talvez você esteja olhando para trás agora. Pensando no que ficou, no que mudou, no que não deu certo, no que você aprendeu. Talvez exista orgulho, talvez exista cansaço, talvez exista um pouco de tudo. E está tudo bem. Nenhum ano passa sem deixar marcas. Mas também nenhum ano passa sem deixar crescimento.
+
+O Ano Novo não precisa ser uma cobrança. Ele pode ser um abraço. Um convite para seguir com mais leveza, mais gentileza consigo mesmo, menos pressa para “chegar” em algum lugar. A vida não é uma linha reta. Ela é feita de curvas, pausas, desvios e descobertas.
+
+Se você não tiver grandes planos, tudo bem. Se tiver muitos, tudo bem também. O que importa é continuar sendo honesto com quem você é e com o que sente. Não existe forma certa de começar um ano, existe a sua forma.
+
+Mesmo de longe, mesmo com a vida nos colocando em lugares diferentes agora, eu ainda desejo que este novo ano te trate com carinho. Que te ofereça mais calma do que cobrança. Mais presença do que ansiedade. Mais momentos de paz do que de dúvida.
+
+Que você se permita viver o próximo ano sem tanto peso nos ombros.
+Que você confie mais em si.
+Que você se escolha, todos os dias.
+
+E que, independentemente do que venha, você nunca esqueça:
+você já carrega tudo o que precisa para continuar.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-13"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('13')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="13 · Leia-me quando for Ano Novo" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+    
+    
+    <details>
+      <summary>14 · Leia-me quando estiver pensando em desistir</summary>
+      <div class="content">
+        <div class="blank">
+          Se a ideia de desistir passou pela sua cabeça agora, eu queria que você soubesse, antes de qualquer coisa, que isso não te torna fraco. Isso te torna humano. Existem momentos em que o cansaço pesa mais que a esperança, em que a vida parece exigir mais do que a gente consegue oferecer. E nesses momentos, o pensamento de parar aparece como um pedido de descanso, não como falta de valor.
+
+Talvez você esteja cansado de tentar. Cansado de esperar que as coisas melhorem. Cansado de se esforçar e ainda sentir que não é o suficiente. Quando esse cansaço se acumula, o coração começa a procurar uma saída. Mas desistir não é a única forma de descansar. Às vezes, o que você precisa não é parar, é diminuir o ritmo.
+
+Você não precisa resolver tudo hoje. Não precisa ter todas as respostas. Não precisa provar nada para ninguém. O simples fato de você ainda estar aqui, sentindo, refletindo, buscando algum tipo de alívio, já mostra que existe algo dentro de você que quer continuar, mesmo que esteja cansado agora.
+
+Quero que você se lembre de quantas vezes achou que não aguentaria e, de alguma forma, aguentou. Não porque era fácil, mas porque você é mais forte do que imagina. Sua força não é barulhenta, não é perfeita, não é constante. Ela é silenciosa, imperfeita, mas real.
+
+Se hoje tudo parece pesado demais, tente tornar o dia menor. Não pense no amanhã inteiro. Pense só na próxima hora. Ou no próximo minuto. Às vezes, continuar não significa avançar, significa apenas permanecer.
+
+Mesmo com a vida nos levando para direções diferentes, eu ainda desejo que você encontre motivos para ficar. Motivos simples, pequenos, gentis. Você merece uma vida que te trate com mais carinho do que esse momento está tratando.
+
+Você não precisa carregar tudo sozinho.
+Você não precisa ser invencível.
+Você só precisa continuar existindo, do seu jeito, no seu tempo.
+
+E isso, por si só, já é um ato de coragem. E se precisar, estarei aqui.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-14"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('14')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="14 · Leia-me quando estiver pensando em desistir" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+    
+    
+    
+    <details>
+      <summary>15 · Leia-me quando estiver frustrado com o trabalho</summary>
+      <div class="content">
+        <div class="blank">
+          Se hoje o trabalho parece mais pesado do que deveria, se nada flui, se as cobranças cansam e a vontade de largar tudo aparece… vem cá. Respira um pouco nessas palavras.
+
+Frustração não nasce da preguiça. Ela nasce de quem se importa. De quem tenta fazer o melhor, de quem quer entregar algo com sentido, de quem sente quando as coisas não saem como deveriam. Você não está frustrado porque é fraco, você está frustrado porque se envolve.
+
+Existem dias em que o esforço parece invisível. Em que ninguém percebe o quanto você tentou, o quanto se dedicou, o quanto se importou. E isso machuca. Machuca porque você sente de verdade. Mas o seu valor não depende do reconhecimento dos outros, nem de resultados imediatos.
+
+Você é maior do que um dia ruim, maior do que um projeto que não deu certo, maior do que um ambiente pesado. O que você constrói vai além do que aparece na superfície. Sua dedicação, sua ética, sua sensibilidade, tudo isso permanece, mesmo quando o cenário não ajuda.
+
+Talvez hoje você precise ser menos exigente consigo. Menos duro. Menos impaciente. Nem todo dia é para brilhar. Alguns dias são só para sobreviver com gentileza.
+
+Se puder, desconecta um pouco. Fecha os olhos por alguns segundos. Lembra de quem você é fora das tarefas, das metas, dos prazos. Você existe além do trabalho. E isso é importante.
+
+Mesmo com a vida seguindo novos caminhos, eu ainda desejo que você encontre mais leveza nas suas jornadas. Que você se sinta respeitado, valorizado e, acima de tudo, em paz com o que faz.
+
+Você não precisa amar todos os dias.
+Você só precisa continuar sendo você, com verdade, com esforço, com humanidade.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-15"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('15')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="15 · Leia-me quando estiver frustrado com o trabalho" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+    
+    
+    
+    <details>
+      <summary>16 · Leia-me quando estiver doente</summary>
+      <div class="content">
+        <div class="blank">
+          Se hoje o seu corpo está pedindo pausa, se a energia sumiu e até as coisas simples parecem exigir mais esforço, eu queria que você se sentisse cuidado por essas palavras. Ficar doente não é só físico, às vezes mexe com o humor, com os pensamentos, com a forma como a gente se enxerga. E tudo bem sentir isso.
+
+Seu corpo está fazendo o que sabe fazer... como estar tentando se proteger, se recuperar, se reorganizar. Ele não está falhando. Ele está trabalhando por você, mesmo quando parece fraco. Agora é a sua vez de tratar ele com a mesma gentileza que você costuma oferecer aos outros.
+
+Você não precisa ser produtivo.
+Não precisa ser forte.
+Não precisa dar conta de tudo.
+
+Hoje, o mais importante é descansar. Deixar o tempo fazer o que só o tempo sabe fazer. Permitir-se ser cuidado, mesmo que seja por si mesmo.
+
+Talvez a doença traga aquele silêncio estranho, aquela sensação de estar meio fora do mundo. Mas você continua pertencendo a ele. Continua sendo importante. Continua sendo alguém que merece conforto, paciência e carinho.
+
+Se puder, se envolva em coisas simples, como um cobertor, uma bebida quente, uma música baixa, um descanso sem culpa. Às vezes, o melhor remédio é se permitir parar.
+
+Mesmo com a vida nos levando para direções diferentes, o desejo de que você fique bem continua aqui, como um cuidado sincero.
+
+Seu corpo vai melhorar.
+Seu ânimo vai voltar.
+E você não precisa atravessar esse momento com dureza.
+
+Seja gentil consigo.
+Hoje, isso já é o suficiente.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-16"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('16')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="16 · Leia-me quando estiver doente" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+    
+    
+    
+    
+    
+    <details>
+      <summary>17 · Leia-me quando estiver duvidando de si mesmo</summary>
+      <div class="content">
+        <div class="blank">
+          Se hoje você está olhando para si com olhos mais duros do que deveria, questionando suas escolhas, suas capacidades, o seu próprio valor… eu queria que você respirasse fundo antes de continuar lendo. Não para se cobrar menos “por obrigação”, mas para se lembrar de que você merece gentileza, principalmente de você mesmo.
+
+Duvidar de si não significa que você está no caminho errado. Significa que você se importa. Que você quer fazer melhor. Que você sente o peso das próprias decisões. Pessoas que não ligam para nada não se questionam. Quem duvida, sente. E quem sente, é real.
+
+Às vezes a mente cria histórias cruéis. Ela pega um erro e transforma em identidade. Pega um momento difícil e transforma em destino. Mas você não é feito de um único capítulo. Você é feito de tentativas, aprendizados, quedas e recomeços. Você é feito de tudo o que já enfrentou, e continuou.
+
+Você não precisa ser perfeito para ser suficiente. Não precisa acertar sempre para ter valor. Não precisa ter tudo resolvido para merecer respeito, inclusive o seu próprio.
+
+Seja paciente consigo agora. Fale com você como falaria com alguém que você ama: com cuidado, com compreensão, sem exigir demais. Você não precisa se punir para crescer. Crescer também acontece no acolhimento.
+
+Você já foi mais forte do que imagina. Já atravessou dias em que achou que não conseguiria. Já seguiu em frente mesmo com medo. Isso não some só porque hoje você está em dúvida.
+
+Mesmo que agora você não consiga enxergar tudo o que você é, eu espero que essas palavras te lembrem de algo importante:
+você não é pequeno.
+você não é insuficiente.
+você não é descartável.
+
+Você é humano.
+E isso, por si só, já é algo bonito de ser.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-17"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('17')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="17 · Leia-me quando estiver duvidando de si mesmo" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+    
+    
+    
+    
+    <details>
+      <summary>18 · Leia-me quando precisar de um abraço</summary>
+      <div class="content">
+        <div class="blank">
+          Se agora tudo parece um pouco demais, se o peito está apertado e você sente aquela vontade silenciosa de ser acolhido, eu queria que você se sentisse envolvido por essas palavras. Não como algo distante, mas como um gesto simples e sincero de cuidado.
+
+Imagina um abraço sem pressa. Um daqueles que não pede explicação, não cobra força, não exige respostas. Um abraço que só diz: “eu estou aqui”. Às vezes, é disso que o coração precisa, não de soluções, mas de presença.
+
+Você não precisa estar bem o tempo todo. Não precisa ser firme o tempo todo. Não precisa segurar tudo sozinho. Existem momentos em que o mais corajoso que a gente pode fazer é se permitir ser acolhido, mesmo que seja em silêncio.
+
+Se você está se sentindo cansado, perdido ou sensível demais, deixa esse abraço te lembrar de algo importante: você é digno de carinho exatamente como está agora. Com suas falhas, seus medos, suas dúvidas, suas emoções. Nada disso te torna menos merecedor de afeto.
+
+Fica aqui um pouco. Respira. Permite que esse abraço exista no seu tempo, do seu jeito. Ele não precisa ser perfeito, só precisa ser sincero.
+
+Mesmo sem palavras, mesmo sem presença física, o cuidado ainda pode ser sentido. E agora, nesse momento, ele está aqui para você. O meu cuidado.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-18"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('18')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="18 · Leia-me quando precisar de um abraço" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+    
+    
+    
+    
+    <details>
+      <summary>19 · Leia-me quando precisar ouvir um elogio</summary>
+      <div class="content">
+        <div class="blank">
+          Se hoje você está se sentindo meio apagado, meio esquecido, meio em dúvida sobre o seu próprio valor, eu queria que você deixasse essas palavras chegarem com calma. Não como algo exagerado, nem como algo forçado, mas como um reconhecimento sincero de quem você é.
+
+Você tem um jeito especial de sentir o mundo. Um jeito profundo, intenso, verdadeiro. Você não passa pelas coisas de forma superficial. Você se envolve e se entrega. Nem todo mundo tem coragem de ser assim.
+
+Você é mais forte do que imagina. Não uma força barulhenta, cheia de pose, mas aquela força silenciosa que continua mesmo quando tudo parece pesado. Você já atravessou coisas difíceis, já segurou mais do que parecia possível, já continuou mesmo sem ter certeza. Isso diz muito sobre você.
+
+Você também é sensível, e isso não é fraqueza. Sensibilidade é a capacidade de perceber, de se importar, de criar vínculos, de sentir de verdade. É isso que te torna humano, próximo, real.
+
+Você tem valor mesmo quando não está no seu melhor dia. Mesmo quando erra. Mesmo quando duvida. Mesmo quando se sente pequeno. O seu valor não depende do seu desempenho, nem da opinião dos outros. Ele existe porque você existe.
+
+E, só para deixar bem claro: você faz falta quando não está. Você marca quando passa. Você importa mais do que imagina.
+
+Então, se hoje você precisava ouvir algo bonito sobre si, aqui vai uma delas:
+você é alguém que vale a pena.
+Alguém que merece carinho e reconhecimento.
+Alguém que deixa marcas boas por onde passa.
+
+Guarda isso com você.
+Você merece ouvir coisas boas sobre si, principalmente de você mesmo.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-19"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('19')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="19 · Leia-me quando precisar ouvir um elogio" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+    
+    
+    
+    <details>
+      <summary>20 · Leia-me quando estiver entediado</summary>
+      <div class="content">
+        <div class="blank">
+          Se agora tudo parece meio sem graça, sem cor, sem novidade… eu queria te lembrar de uma coisa simples: nem todo momento precisa ser intenso para ser válido. Às vezes, o tédio é só o corpo pedindo um respiro da pressa, da cobrança, do excesso de estímulo.
+
+O tédio não significa que a sua vida é vazia. Significa que você está em um intervalo. Um espaço silencioso entre um pensamento e outro, entre um dia e outro, entre um sentimento e outro. E esses espaços também fazem parte da caminhada.
+
+Você não precisa preencher cada minuto com algo grandioso. Às vezes, o mais bonito acontece justamente nos momentos simples: um pensamento solto, uma música que toca diferente, uma lembrança inesperada, um sorriso sem motivo.
+
+Talvez agora você só precise se permitir sentir o tempo passar sem culpa. Olhar pela janela. Respirar fundo. Pensar em algo leve. O tédio pode ser um descanso disfarçado.
+
+E mesmo quando tudo parece parado, você continua sendo alguém em movimento por dentro. Crescendo, sentindo, mudando. Nem toda transformação faz barulho.
+
+Se quiser, usa esse momento para cuidar de você. Para se tratar com mais gentileza. Para lembrar que você não precisa estar sempre ocupado para ser importante.
+
+O mundo não exige pressa de você.
+E você não precisa correr para lugar nenhum agora.
+
+Fica.
+Respira.
+Às vezes, o simples também é suficiente.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-20"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('20')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="20 · Leia-me quando estiver entediado" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+    
+    
+    <details>
+      <summary>21 · Leia-me quando quiser saber minha memória favorita com você</summary>
+      <div class="content">
+        <div class="blank">
+          Minha memória favorita com você não é uma só. Ela não cabe em um único momento, porque o que mais me marcou sempre foi o jeito como as coisas simples se tornavam especiais quando estávamos juntos.
+
+Eu lembro de nós assistindo nossos canais favoritos no YouTube, lado a lado, comentando coisas bobas, rindo de detalhes que talvez só nós dois achássemos graça. Não era sobre o vídeo. Era sobre a sensação de estar ali, compartilhando aquele tempo sem pressa, sem expectativa, só presença.
+
+Eu lembro de quando eu cozinhava alguma coisa e você ficava tão feliz que vinha me beijar, como se aquele gesto simples fosse um presente enorme. E, de alguma forma, era. Porque não era só comida, era cuidado, era carinho, era o jeito que a gente dizia “eu me importo” sem precisar falar nada.
+
+Eu lembro da gente no balanço, na chuva, rindo da situação, molhados, sem se importar com o resto do mundo. Aquele momento tinha tudo o que eu gostava na gente: leveza, cumplicidade, a sensação de que a vida podia ser bonita mesmo nos dias mais improváveis.
+
+E eu lembro, com um carinho especial, de deitar no seu colo depois de um dia cansativo. Ali, o mundo ficava menor. O barulho diminuía. O corpo relaxava. Era o meu lugar de calma. Não porque os problemas sumiam, mas porque eu não precisava enfrentá-los sozinha.
+
+Minha memória favorita com você é essa soma de pequenos instantes que, juntos, formam algo grande. Não são cenas de filme. São cenas de vida. Reais, simples, cheias de sentimento.
+
+Mesmo que o tempo tenha mudado as coisas, essas lembranças continuam existindo, como algo que aquece. Elas me lembram que fomos reais. Que sentimos de verdade. Que existiu cuidado.
+
+E isso, para mim, sempre vai ser bonito.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-21"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('21')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="21 · Leia-me quando quiser saber minha memória favorita com você" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+  
+    <details>
+      <summary>22 · Leia-me quando perder algo ou alguém especial</summary>
+      <div class="content">
+        <div class="blank">
+          Se você chegou até aqui, é porque alguma coisa importante se foi. E quando algo importante vai embora, não importa se foi uma pessoa, um sonho, uma fase da vida ou uma versão de você mesmo, o vazio aparece. Um vazio estranho, silencioso, que não se explica direito, mas se sente no corpo inteiro.
+
+Perder dói porque aquilo que foi embora tinha espaço no seu coração. Tinha significado. Tinha história. E nada que é verdadeiro some sem deixar marca. A dor não é sinal de fraqueza. É sinal de amor, de vínculo, de importância.
+
+Talvez você esteja tentando ser forte. Talvez esteja fingindo que está tudo bem. Talvez esteja só sobrevivendo ao dia. Qualquer uma dessas formas é válida. Não existe jeito certo de atravessar uma perda. Existe apenas o jeito que você consegue.
+
+Você não precisa apressar o luto. Não precisa “superar” rápido. Não precisa transformar a dor em aprendizado agora. Algumas perdas só pedem silêncio, tempo e gentileza consigo mesmo.
+
+O que foi especial não desaparece completamente. Ele muda de lugar. Sai do presente e vai para a memória, para o coração, para aquilo que te formou. E, mesmo doendo, isso também é uma forma de presença.
+
+Se hoje o mundo parece mais pesado, deixa ele ser um pouco mais lento. Cuida de você como cuidaria de alguém que você ama. Com paciência. Com carinho. Sem cobranças.
+
+Você não está errado por sentir falta.
+Você não está fraco por doer.
+Você não está sozinho por estar triste. Ainda de longe, eu to aqui, nessas palavras, você não precisa estar sozinho.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-22"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('22')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="22 · Leia-me quando perder algo ou alguém especial" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>23 · Leia-me quando sentir que virá uma crise de ansiedade</summary>
+      <div class="content">
+        <div class="blank">
+          Se o seu corpo começou a dar sinais, o peito apertando, a respiração encurtando, os pensamentos acelerando, eu quero que você saiba de algo muito importante: você está seguro agora. Mesmo que não pareça, mesmo que a sensação seja assustadora, isso vai passar. E você não precisa enfrentar esse momento sozinho.
+
+A ansiedade engana. Ela faz o mundo parecer maior do que é, os problemas mais urgentes do que realmente são, e o futuro mais pesado do que precisa ser. Mas, neste exato instante, você está aqui. Respirando. Existindo. E isso já é suficiente.
+
+Não lute contra o que está sentindo. Quanto mais a gente briga com a ansiedade, mais ela cresce. Em vez disso, tenta se ancorar em algo simples:
+sente seus pés no chão,
+nota a respiração entrando e saindo,
+percebe o ambiente ao seu redor.
+
+Você não precisa controlar tudo agora. Só precisa atravessar esse momento com gentileza.
+
+A crise não define quem você é. Ela não apaga sua força, sua sensibilidade, sua história. Ela é só uma onda intensa, mas passageira. E você já atravessou outras antes, mesmo quando achou que não conseguiria.
+
+Seja paciente consigo. Fale consigo com cuidado. Você não está exagerando, não está sendo fraco, não está falhando. Você está sentindo. E sentir também é uma forma de existir.
+
+Mesmo que agora tudo pareça confuso, confia:
+o ar vai voltar ao ritmo,
+o coração vai acalmar,
+a mente vai encontrar silêncio de novo.
+
+Você não precisa resolver a vida durante uma crise.
+Você só precisa continuar respirando.
+
+E isso você já está fazendo.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-23"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('23')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="23 · Leia-me quando sentir que virá uma crise de ansiedade" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+
+    <details>
+      <summary>24 · Leia-me quando precisar se sentir amado</summary>
+      <div class="content">
+        <div class="blank">
+          Se hoje o seu coração está pedindo mais carinho, mais presença, mais certeza… eu queria que você sentisse essas palavras como um gesto de afeto sincero. Não como algo exagerado, nem como algo distante, mas como um lembrete suave de que você é digno de amor exatamente como é.
+
+Sentir-se amado não é sobre grandes declarações ou gestos perfeitos. Às vezes, é sobre ser visto. Sobre ser lembrado. Sobre saber que alguém, em algum lugar, se importa com o que você sente, com o que você vive, com quem você é.
+
+Você é alguém que deixa marcas. Que cria laços. Que toca o mundo de um jeito próprio. Mesmo quando você não percebe, sua presença faz diferença. Seu jeito de sentir, de se importar, de estar ali, tudo isso é amor em forma de pessoa.
+
+Não importa se hoje você se sente mais sensível, mais carente, mais silencioso. Isso não te diminui. Pelo contrário, mostra que você tem um coração que sente fundo. E corações assim merecem cuidado, não julgamento.
+
+Você não precisa provar nada para ser amado. Não precisa ser perfeito, forte o tempo todo, nem ter tudo resolvido. O amor verdadeiro não nasce da performance, ele nasce da conexão.
+
+Então, se hoje você precisava sentir isso, aqui vai, com toda a sinceridade:
+você é amado pelo que é,
+pelo que sente,
+pelo que já foi,
+e pelo que ainda está se tornando.
+
+Guarda esse sentimento com você.
+Você não é invisível.
+Você não é pouco.
+Você é importante.
+
+E isso, por si só, já é amor.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-24"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('24')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="24 · Leia-me quando precisar se sentir amado" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>25 · Leia-me quando estiver celebrando uma conquista</summary>
+      <div class="content">
+        <div class="blank">
+          Se você chegou até aqui porque algo deu certo, porque um esforço valeu a pena, porque um objetivo foi alcançado… eu queria que você sentisse orgulho de si. Não aquele orgulho barulhento, cheio de comparações, mas o orgulho calmo de quem sabe o quanto caminhou para chegar até aqui.
+
+Conquistas não nascem do nada. Elas vêm de tentativas, de erros, de dias em que você quase desistiu, de momentos em que continuou mesmo sem ter certeza. Por trás de cada vitória existe um monte de versões suas que não desistiram, e todas elas merecem reconhecimento.
+
+Talvez para o mundo isso pareça “só mais uma coisa”. Mas você sabe o peso que isso teve. Sabe o quanto exigiu. Sabe o quanto você cresceu no processo. E isso importa.
+
+Quero que você se permita sentir alegria sem culpa. Sem achar que não é grande o suficiente. Sem diminuir o próprio esforço. Você não precisa se encolher para caber em expectativas alheias.
+
+Celebre do seu jeito. Em silêncio, em sorriso, em alívio, em descanso. Cada forma de comemorar é válida quando nasce do coração.
+
+Mesmo que nem todos vejam, eu vejo o quanto você tentou.
+Mesmo que nem todos saibam, eu sei o quanto você se esforçou.
+
+E mais do que o resultado, o que sempre foi bonito em você é a forma como se entrega às coisas que importam.
+
+Parabéns por continuar.
+Parabéns por não desistir.
+Parabéns por ser quem você é, mesmo quando o caminho foi difícil.
+
+Você merece esse momento.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-25"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('25')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="25 · Leia-me quando estiver celebrando uma conquista" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>26 · Leia-me quando quiser saber de coisas que me lembram você</summary>
+      <div class="content">
+        <div class="blank">
+          Tem muitas coisas no mundo que ainda me fazem pensar em você. E não são coisas grandiosas ou raras, são detalhes simples, quase invisíveis para quem olha de fora, mas cheios de significado para quem viveu o que a gente viveu.
+
+Algumas músicas, por exemplo. Não porque sejam especiais para o mundo inteiro, mas porque em algum momento elas tocaram enquanto a gente estava junto. Porque eu as dediquei a você, ou porque você cantou, ou porque elas viraram trilha sonora de um pedaço da nossa história. Às vezes, quando elas tocam, o tempo parece dar uma voltinha no passado, e por alguns segundos tudo fica mais próximo.
+
+Tem também aqueles vídeos aleatórios que eu vejo e logo penso: “meu Deus, ele ia amar isso”. Memes bobos, coisas engraçadas, cenas sem sentido, mas que tinham exatamente o tipo de humor que combinava com você. E mesmo sem te mandar, eu sorrio sozinha, imaginando a sua reação.
+
+E, claro, quando vejo algum Ford Ka preto, sempre que um passa, é impossível não lembrar. Não é sobre o carro em si, é sobre tudo o que ele representa. Sobre os momentos, as conversas, as viagens, os trajetos, as histórias que ficaram ali guardadas.
+
+Mas o que mais aquece meu coração são as lembranças de você cantando e dançando no carro. Eu gravava porque queria guardar aquele seu jeito leve, espontâneo, feliz. Aquela versão sua que existia sem esforço. E toda vez que eu lembro, é como se o mundo ficasse um pouco mais macio.
+
+Essas coisas não machucam. Elas aquecem.
+
+Porque o que foi verdadeiro deixa marcas suaves. Marcas que não pesam, mas confortam.
+
+E sim… às vezes dá saudade.
+Mas é uma saudade que vem com carinho, não com dor.
+Uma saudade que diz: “foi bonito viver isso.”
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-26"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('26')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="26 · Leia-me quando quiser saber de coisas que me lembram você" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>27 · Leia-me quando receber uma má notícia</summary>
+      <div class="content">
+        <div class="blank">
+          Se você está lendo isso agora, é porque algo te atingiu de um jeito que dói. Talvez tenha sido inesperado. Talvez tenha sido injusto. Talvez tenha sido simplesmente pesado demais para o coração. Más notícias têm esse poder estranho de nos deixar sem chão, como se o mundo tivesse perdido um pouco da cor de repente.
+
+Quero que você saiba que é normal se sentir confuso, triste, irritado ou até vazio. Não existe reação certa para momentos assim. Cada sentimento que aparece é só uma forma do seu coração tentar entender o que aconteceu.
+
+Você não precisa ser forte agora.
+Não precisa responder mensagens.
+Não precisa ter palavras.
+
+Às vezes, tudo o que a gente consegue fazer é respirar e existir. E isso já é suficiente.
+
+Se puder, desacelera. Dá um tempo para o seu corpo sentir, para a sua mente organizar, para o seu coração descansar. Más notícias não precisam ser digeridas rápido. Elas pedem cuidado, não pressa.
+
+Lembra que você já passou por momentos difíceis antes. Lembra que você encontrou forças onde achava que não existiam. Você não é frágil, você é sensível. E sensibilidade também é força.
+
+Mesmo sem saber exatamente o que dizer, eu gostaria que você sentisse um pouco de conforto aqui. Como um lugar silencioso onde você pode descansar por alguns minutos, sem precisar explicar nada.
+
+Você não está sozinho nesse sentimento.
+Você não precisa carregar tudo de uma vez.
+E você não precisa ter todas as respostas agora.
+
+Às vezes, o primeiro passo depois de uma notícia ruim é simplesmente continuar respirando.
+E você está fazendo isso.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-27"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('27')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="27 · Leia-me quando receber uma má notícia" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>28 · Leia-me quando não estiver com vontade de sair da cama</summary>
+      <div class="content">
+        <div class="blank">
+          Se hoje o mundo parece pesado demais para enfrentar, se o corpo não quer levantar e a cabeça pede mais alguns minutos de silêncio… eu queria que você sentisse essas palavras como um abraço demorado. Um daqueles que não apressam, não cobram, não exigem nada, só dizem “fica aqui comigo um pouco.”
+
+Existem dias em que a cama vira refúgio. Não por preguiça, mas por cansaço. Cansaço de pensar, de sentir, de lidar com tudo. E nesses dias, tudo o que o coração quer é alguém por perto, dizendo baixinho que vai ficar tudo bem.
+
+Eu queria poder estar aí agora. Te abraçar com calma. Te deixar respirar sem pressa. Te lembrar, do jeito mais simples possível, que você não precisa ser forte hoje. Você só precisa existir.
+
+Você não é fraco por querer ficar mais um pouco.
+Você não está errado por se sentir assim.
+Você não está atrasado na vida.
+
+Você está apenas cansado. E gente cansada merece carinho, não cobrança.
+
+Se conseguir, faz um gesto pequeno. Abre um pouco a janela. Senta na beira da cama. Bebe um copo de água. Não precisa vencer o dia inteiro, só precisa dar um passo gentil.
+
+E se ainda assim o corpo pedir mais tempo, tudo bem. Alguns dias não são feitos para grandes conquistas. São feitos para sobrevivência com delicadeza.
+
+Mesmo sem estar aí fisicamente, o cuidado continua existindo.
+Mesmo sem palavras, o carinho ainda chega.
+
+Fica aqui mais um pouco.
+Respira.
+O mundo pode esperar.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-28"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('28')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="28 · Leia-me quando não estiver com vontade de sair da cama" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>29 · Leia-me quando precisar de uma razão para continuar</summary>
+      <div class="content">
+        <div class="blank">
+          Se você chegou até aqui, é porque alguma coisa dentro de você está cansada. Talvez muito cansada. Cansada de tentar, de esperar, de carregar coisas que parecem grandes demais para um coração só. E eu queria que você soubesse, com toda a delicadeza do mundo: sentir isso não te torna fraco. Te torna humano.
+
+Às vezes a vida aperta em lugares que ninguém vê. A gente segue por fora, mas por dentro está só tentando aguentar. Nesses momentos, continuar não é sobre ter grandes sonhos ou planos perfeitos. Continuar é sobre existir mais um pouco. Respirar mais um pouco. Dar espaço para o amanhã acontecer, mesmo sem saber como ele vai ser.
+
+Você não precisa ter tudo claro agora.
+Não precisa enxergar longe.
+Não precisa ter certeza de nada.
+
+Às vezes, a única razão que a gente precisa é: “eu ainda estou aqui.”
+
+Você carrega histórias. Carrega sentimentos, tudo o que já viveu. E mesmo que hoje pareça difícil ver valor nisso, a sua existência tem peso. Tem significado. Tem impacto, mesmo nos detalhes que você não percebe.
+
+O mundo ainda pode te surpreender.
+Você ainda pode sentir coisas boas.
+Você ainda pode encontrar calma, riso, leveza.
+
+Nem todo dia é feito para ser bonito. Mas todos os dias são feitos para serem atravessados com gentileza.
+
+Se hoje tudo parece demais, torna o dia menor. Pensa só na próxima hora. No próximo gesto simples. No próximo respiro. Continuar não precisa ser grandioso, só precisa ser possível.
+
+E, por favor, lembra disso:
+você não precisa carregar tudo sozinho.
+Você merece cuidado.
+Você merece descanso.
+Você merece existir.
+
+Mesmo quando a força parece pouca, ela ainda existe em você.
+E às vezes, continuar é o ato mais silencioso, e mais corajoso, que alguém pode fazer.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-29"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('29')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="29 · Leia-me quando precisar de uma razão para continuar" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>30 · Leia-me quando tiver uma semana difícil</summary>
+      <div class="content">
+        <div class="blank">
+          Se os dias passaram arrastados, se tudo pareceu exigir mais do que você tinha para dar, eu queria que você sentisse essas palavras como um lugar de descanso. Sem cobrança. Sem expectativas. Só um espaço seguro para respirar um pouco.
+
+Semanas difíceis cansam de um jeito diferente. Não é só o corpo que se desgasta, é a mente, o coração, a vontade. Às vezes parece que a gente passou por uma maratona invisível, onde ninguém viu o esforço, mas você sentiu cada passo.
+
+Talvez nada tenha dado exatamente errado. Ou talvez tenha dado. Mas, de alguma forma, tudo ficou pesado. E quando isso acontece, a gente não precisa ser forte o tempo todo. A gente só precisa ser gentil consigo.
+
+Você não é fraco por se sentir cansado.
+Você não falhou por precisar de pausa.
+
+Você só é humano.
+
+Agora é hora de diminuir o ritmo. De se tratar com mais carinho. De lembrar que você não precisa carregar o mundo nas costas sozinho. Uma semana difícil não define quem você é, ela só mostra o quanto você se esforçou.
+
+Se puder, faça algo pequeno por você. Algo que não exija nada, só ofereça conforto. Um banho quente. Uma música calma. Um momento de silêncio. O descanso também é uma forma de cuidado.
+
+Mesmo quando os dias parecem pesados, você continua sendo alguém que merece leveza.
+Mesmo quando tudo cansa, você ainda merece paz.
+
+Respira.
+A semana passou.
+E você passou por ela.
+
+Isso já é muita coisa.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-30"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('30')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="30 · Leia-me quando tiver uma semana difícil" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>31 · Leia-me quando alguém te decepcionar</summary>
+      <div class="content">
+        <div class="blank">
+          Se alguém te decepcionou, é porque em algum momento você acreditou, confiou, esperou algo bonito. E isso não é fraqueza. Isso é coração aberto. A decepção dói justamente porque nasce do cuidado, da expectativa, do afeto que você colocou ali.
+
+Talvez você esteja se sentindo frustrado, triste, magoado ou até confuso. Talvez esteja tentando entender onde tudo mudou, o que você fez de errado, se poderia ter sido diferente. Mas eu queria te lembrar de algo importante: a atitude de outra pessoa não diminui quem você é.
+
+Você não errou por confiar.
+Você não errou por esperar mais.
+Você não errou por sentir.
+
+Errar seria fechar o coração para o mundo inteiro só porque alguém não soube cuidar do que você ofereceu.
+
+Decepções ensinam, mas não precisam endurecer. Elas mostram limites, não verdades sobre o seu valor. Você continua sendo alguém sensível, inteiro, digno de respeito e de reciprocidade.
+
+É normal sentir vontade de se proteger. De se afastar. De ficar mais quieto por um tempo. Faça isso com carinho por você, não com raiva do mundo. O seu coração merece descanso, não punição.
+
+Se alguém não soube estar à altura do que você ofereceu, isso não significa que o que você ofereceu era pequeno. Significa que era grande demais para quem não sabia cuidar.
+
+Respira.
+Sente o que precisa sentir.
+Mas não deixe que uma decepção apague tudo o que você é.
+
+Você ainda merece encontros bons, gestos sinceros, afetos leves.
+E eles existem, mesmo quando alguém falha no caminho.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-31"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('31')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="31 · Leia-me quando alguém te decepcionar" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>32 · Leia-me quando tudo parecer demais para aguentar</summary>
+      <div class="content">
+        <div class="blank">
+          Se agora o mundo está pesado demais, se o coração está cansado e a mente não encontra silêncio, eu queria que você sentisse essas palavras como um lugar para descansar por alguns minutos. Não para resolver tudo. Não para ser forte. Só para respirar.
+
+Existem momentos em que a vida aperta de todos os lados. Problemas, sentimentos, responsabilidades, lembranças… tudo parece chegar junto, sem dar espaço para o ar entrar. E quando isso acontece, o corpo pede pausa, o coração pede cuidado, a alma pede abrigo.
+
+Você não precisa aguentar tudo sozinho.
+Você não precisa ser invencível.
+Você não precisa ter respostas agora.
+
+Às vezes, continuar não é sobre avançar. É só sobre permanecer. Permanecer aqui, respirando, existindo, sentindo, mesmo quando dói.
+
+Se puder, torna esse momento menor. Não pensa na semana inteira, nem no futuro distante. Pensa só neste instante. No ar entrando. No ar saindo. No fato de que você ainda está aqui. E isso já é algo importante.
+
+O que você sente é válido. O cansaço é real. A sobrecarga existe. Mas você também existe, e isso importa mais do que você imagina.
+
+Mesmo quando tudo parece pesado demais, você ainda merece cuidado.
+Mesmo quando a força parece pouca, ela ainda está aí.
+Mesmo quando o mundo aperta, você ainda merece gentileza.
+
+Fica aqui um pouco.
+Respira comigo.
+O peso não precisa ser carregado todo de uma vez.
+
+Você não está sozinho nesse sentir.
+E você não precisa atravessar esse momento com dureza.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-32"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('32')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="32 · Leia-me quando tudo parecer demais para aguentar" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>33 · Leia-me quando estiver se sentindo ansioso</summary>
+      <div class="content">
+        <div class="blank">
+          Se o seu coração está acelerado, se a mente não para, se tudo parece urgente demais, eu queria que você sentisse essas palavras como um lugar de pausa. A ansiedade faz o mundo parecer maior, mais barulhento, mais pesado do que realmente é. Mas você não precisa correr agora. Você pode ficar aqui por alguns instantes.
+
+Ansiedade não é fraqueza. Ela nasce do cuidado, do medo de perder, da vontade de acertar, da sensibilidade que você carrega. Pessoas que sentem fundo, também se preocupam fundo. E isso diz muito sobre o seu coração.
+
+Quando tudo parece fora de controle, tenta trazer o corpo para o presente. Sente seus pés no chão. Respira devagar. Percebe o ar entrando e saindo. Nem tudo precisa ser resolvido agora. Nem todo pensamento precisa ser seguido. Alguns só precisam passar.
+
+Você não está em perigo.
+Você não está falhando.
+Você não está sozinho.
+
+Seu corpo só está tentando te proteger, mesmo que o alarme esteja alto demais.
+
+Permite-se desacelerar. Não exige calma de si à força. A calma chega quando o coração se sente seguro, não quando é pressionado. Seja gentil com você agora. Fale consigo como falaria com alguém que você ama.
+
+A ansiedade não define quem você é. Ela é um estado, não uma identidade. Ela vem, mas também vai. E você continua sendo você, inteiro, sensível, digno de cuidado.
+
+Fica aqui um pouco.
+Respira.
+Você está fazendo o melhor que pode.
+E isso já é suficiente.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-33"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('33')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="33 · Leia-me quando estiver se sentindo ansioso" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>34 · Leia-me quando precisar de alguém para te ouvir</summary>
+      <div class="content">
+        <div class="blank">
+          Se você chegou até aqui, é porque tem algo dentro de você pedindo espaço. Algo que quer ser dito, mesmo que ainda não saiba exatamente como. Às vezes não é uma frase, nem um problema claro, é só um peso no peito, um nó na garganta, uma sensação de "eu precisava falar com alguém agora".
+
+E eu queria que você sentisse essas palavras como um lugar seguro. Sem julgamentos. Sem pressa. Sem interrupções.
+
+Você não precisa organizar o que sente para merecer ser ouvido.
+Não precisa ter uma história bonita.
+Não precisa explicar tudo direito.
+
+Você só precisa ser você.
+
+Ser ouvido não é sobre encontrar respostas. É sobre ter espaço. Sobre sentir que o que você carrega importa. Sobre não precisar segurar tudo sozinho. E você não precisa.
+
+Se você pudesse falar agora, eu te escutaria em silêncio. De verdade. Sem tentar consertar. Sem minimizar. Só estando ali. Porque às vezes o que cura não é a solução, é a presença.
+
+Você tem o direito de sentir o que sente.
+Tem o direito de estar confuso.
+Tem o direito de estar cansado.
+Tem o direito de precisar de alguém.
+
+Isso não te enfraquece. Te humaniza.
+
+Mesmo quando as palavras não saem, o sentimento existe. E ele merece cuidado. Você merece cuidado.
+
+Então, se hoje você só precisava de um lugar para descansar a mente e o coração, fica aqui um pouco. Respira. Sente. Permite-se existir sem pressão.
+
+Você não precisa carregar tudo em silêncio.
+Você não precisa atravessar isso sozinho.
+Você merece ser ouvido, exatamente como é.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-34"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('34')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="34 · Leia-me quando precisar de alguém para te ouvir" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>35 · Leia-me quando quiser saber minhas coisas favoritas sobre você</summary>
+      <div class="content">
+        <div class="blank">
+          Minhas coisas favoritas sobre você nunca foram apenas sobre o que você fazia. Sempre foram sobre como você me fazia sentir.
+
+Eu amava quando você me fazia rir daquele jeito que saía sem esforço, como se a alegria fosse algo natural perto de você. Rir com você era leve. Era simples. Era um descanso para o coração.
+
+Eu amava quando você beijava meu pescoço, não só pelo gesto, mas pelo cuidado silencioso que vinha junto. Era um carinho que dizia “eu estou aqui” sem precisar de palavras. Um detalhe pequeno, mas cheio de presença.
+
+Eu amava quando você dançava comigo, mesmo sem música perfeita, mesmo sem passos certos. O que importava era a conexão, o riso, o momento compartilhado. Era o tipo de coisa que transformava um dia comum em algo especial.
+
+Mas uma das minhas coisas favoritas, de verdade, era quando você me dava flores. Mesmo sendo poucas vezes, eu me sintia tão importante. Meus olhos brilhavam, meu coração se abria, às vezes eu até chorava, não de tristeza, mas de sentir que era vista, cuidada.
+
+Eu sinto falta desses momentos. Não como uma dor pesada, mas como uma lembrança bonita. Uma saudade que aquece mais do que machuca. Porque eles me lembram que existiu carinho, existiu entrega, existiu amor.
+
+Minhas coisas favoritas sobre você sempre foram essas:
+os gestos simples,
+os detalhes silenciosos,
+a forma como você fazia o mundo parecer mais leve quando estava por perto.
+
+E isso, para mim, sempre vai ser algo bonito de lembrar.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-35"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('35')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="35 · Leia-me quando quiser saber minhas coisas favoritas sobre você" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>36 · Leia-me quando precisar de um conselho meu</summary>
+      <div class="content">
+        <div class="blank">
+          Se você chegou até aqui, é porque alguma coisa está te pedindo clareza. Talvez uma decisão difícil. Talvez um caminho que parece confuso. Talvez só aquele sentimento de “eu não sei o que fazer agora”. E tudo bem não saber. Ninguém nasce com manual de instruções para a própria vida.
+
+Meu conselho para você nunca vai ser sobre fazer tudo certo. Vai ser sobre fazer o que te respeita.
+
+Escuta o que o seu coração está tentando dizer, mesmo quando a mente faz barulho. O coração fala baixo, mas ele é honesto. Ele sabe onde dói, onde pesa, onde alivia. E seguir o que te traz paz quase sempre é a escolha mais certa, mesmo quando dá medo.
+
+Você não precisa agradar todo mundo.
+Não precisa se explicar o tempo todo.
+Não precisa viver uma vida que não combina com quem você é.
+
+Escolhas que respeitam seus limites também são escolhas corajosas.
+
+Se algo está te tirando o sono, talvez seja um sinal de que precisa ser olhado com mais carinho. Se algo te traz calma, talvez seja um sinal de que você está indo na direção certa. A vida não precisa ser perfeita, ela só precisa ser honesta com você.
+
+E se errar no caminho, tudo bem também. Errar não apaga quem você é. Só mostra que você tentou.
+
+Meu conselho sempre será esse:
+seja gentil consigo,
+seja verdadeiro com o que sente,
+e escolha aquilo que te faz respirar melhor.
+
+Você merece uma vida que não machuque o seu próprio coração.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-36"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('36')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="36 · Leia-me quando precisar de um conselho meu" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>37 · Leia-me quando quiser ler um poema sobre você</summary>
+      <div class="content">
+        <div class="blank">
+          Você é feito de coisas que não cabem em frases curtas.
+Você é feito de silêncios que dizem muito,
+de risos que aquecem,
+de olhares que carregam histórias.
+
+Você caminha pelo mundo sem perceber
+quantas marcas deixa pelo caminho.
+Algumas são leves, como um sorriso inesperado.
+Outras são profundas, como quem aprende a amar.
+
+Você sente demais,
+e isso nunca foi um defeito.
+Sentir é o jeito mais bonito de existir.
+É o jeito mais humano de estar no mundo.
+
+Você é abrigo quando está presente.
+É lembrança quando está distante.
+É calmaria em dias barulhentos.
+É luz em momentos nublados.
+
+Você não precisa ser perfeito
+para ser importante.
+Você não precisa ser forte
+para ser valioso.
+
+Você só precisa ser você.
+E isso já é mais do que suficiente.
+
+Se algum dia você esquecer quem é,
+leia essas palavras com calma:
+você é alguém que merece amor,
+cuidado
+e gentileza,
+principalmente de si mesmo.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-37"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('37')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="37 · Leia-me quando quiser ler um poema sobre você" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>38 · Leia-me quando esquecer quem você é</summary>
+      <div class="content">
+        <div class="blank">
+          Se em algum momento você olhar para si e não reconhecer mais a própria luz, se sentir pequeno demais, confuso demais, distante de quem já foi… eu queria que você respirasse fundo antes de continuar. Porque esquecer quem você é não significa que você se perdeu. Significa apenas que você está cansado.
+
+A vida, às vezes, vai apagando a gente aos poucos. Com cobranças, expectativas, frustrações, silêncios. E, sem perceber, a gente começa a acreditar que virou menos do que realmente é. Mas você nunca deixou de ser inteiro, só ficou sobrecarregado.
+
+Você é feito de sensibilidade, de cuidado, de presença. Você é alguém que sente fundo, que se importa de verdade, que cria laços reais. Você é alguém que já foi abrigo, riso, companhia, conforto. E isso não desaparece só porque agora você está em dúvida.
+
+Você não é os seus erros.
+Você não é os seus dias difíceis.
+Você não é as suas inseguranças.
+
+Você é tudo o que já enfrentou, e continuou.
+
+Mesmo quando você se sente perdido, existe algo em você que ainda quer luz. Algo que ainda quer calma. Algo que ainda quer paz. E isso é quem você é, no fundo.
+
+Se hoje você esqueceu a própria força, tudo bem. Ela não foi embora. Só está descansando.
+Se hoje você esqueceu o próprio valor, tudo bem. Ele não diminuiu. Só ficou escondido atrás do cansaço.
+
+Você não precisa se reencontrar inteiro agora.
+Às vezes, basta lembrar de um detalhe bonito sobre si.
+Depois outro.
+Depois mais um.
+
+E, aos poucos, você volta.
+
+Você nunca deixou de ser alguém que merece carinho, respeito e amor, principalmente de si mesmo.
+Mesmo quando esquece, você ainda é você.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-38"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('38')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="38 · Leia-me quando esquecer quem você é" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>39 · Leia-me quando duvidar do seu valor</summary>
+      <div class="content">
+        <div class="blank">
+          Se hoje você está olhando para si e se perguntando se é suficiente, se é importante, se faz diferença… eu queria que você lesse essas palavras devagar. Não como uma tentativa de convencer você de algo, mas como um lembrete suave do que já é verdade, mesmo quando você esquece.
+
+O seu valor não nasce do que você produz, do que conquista ou do que os outros reconhecem. Ele nasce do fato de você existir. De você sentir. De você se importar. De você ser quem é, com todas as suas imperfeições, sensibilidades e histórias.
+
+Você não é substituível.
+Você não é descartável.
+Você não é “pouco”.
+
+Você é único no jeito de amar, de sentir, de se entregar, de enxergar o mundo. E isso não se repete em ninguém mais.
+
+Talvez alguém não tenha sabido ver tudo o que você é. Talvez a vida tenha sido dura demais em alguns momentos. Talvez você mesmo tenha começado a se tratar com menos carinho do que merece. Mas nada disso apaga o seu valor.
+
+Você já foi abrigo.
+Já foi cuidado.
+Já foi alegria.
+Já foi importante para alguém.
+
+E isso não some só porque agora você está em dúvida.
+
+Você merece ser tratado com respeito, começando por você mesmo. Merece gentileza, paciência, compreensão. Não porque você é perfeito, mas porque você é humano.
+
+Se hoje o seu coração está precisando de um lembrete, aqui vai, com toda a sinceridade do mundo:
+você vale a pena.
+Você sempre valeu.
+E sempre vai valer.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-39"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('39')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="39 · Leia-me quando duvidar do seu valor" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>40 · Leia-me quando precisar se sentir visto</summary>
+      <div class="content">
+        <div class="blank">
+          Se hoje você sente que está passando despercebido, como se suas emoções, seus esforços ou até sua existência estivessem ficando invisíveis para o mundo, eu queria que você se sentisse acolhido por essas palavras. Porque você é visto, mesmo quando parece que ninguém está olhando.
+
+Ser visto não é só ser notado. É ser reconhecido por quem você é por dentro. É sentir que suas emoções importam, que seus silêncios dizem algo, que sua presença faz diferença. E você faz. Mesmo quando o mundo anda distraído demais para perceber.
+
+Você não é só mais um rosto na multidão.
+Você não é só mais um nome na lista.
+Você não é só mais um dia passando.
+
+Você é alguém que sente fundo, que se importa, que carrega histórias, marcas, sonhos e cicatrizes. Tudo isso é real. Tudo isso importa.
+
+Às vezes a gente só quer que alguém perceba o quanto estamos tentando. O quanto estamos aguentando. O quanto estamos sentindo. E mesmo que nem sempre exista alguém ali na hora certa, o que você vive continua sendo válido.
+
+Você não precisa gritar para ser visto.
+Você não precisa provar nada para existir.
+Você não precisa se diminuir para caber.
+
+Você já ocupa espaço no mundo simplesmente por ser quem é.
+
+Se hoje você está se sentindo invisível, lembra disso:
+você é presença.
+você é sentimento.
+você é história.
+
+E tudo isso merece ser visto, começando por você mesmo.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-40"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('40')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="40 · Leia-me quando precisar se sentir visto" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>41 · Leia-me quando precisar se sentir acolhido</summary>
+      <div class="content">
+        <div class="blank">
+          Se hoje o mundo parece duro demais, se as coisas lá fora estão barulhentas, confusas ou simplesmente pesadas, eu queria que você encontrasse aqui um lugar de descanso. Um lugar onde você não precisa se explicar, não precisa se defender, não precisa ser forte. Um lugar onde você pode só ser.
+
+Ser acolhido não é receber respostas.
+É receber presença.
+
+É sentir que alguém estaria ali, mesmo no silêncio.
+É saber que você pode existir do jeito que está, sem precisar mudar nada.
+
+Às vezes o que mais machuca não é a dor em si, mas a sensação de atravessá-la sozinho. E você não merece passar por nada sozinho. Você merece colo, cuidado, gentileza. Você merece ser tratado com a mesma delicadeza que você oferece ao mundo.
+
+Imagina um lugar onde o tempo desacelera.
+Onde o ar entra mais leve.
+Onde o peito relaxa.
+
+Esse lugar pode ser agora.
+
+Você não precisa carregar tudo no coração o tempo inteiro. Não precisa guardar todas as emoções. Não precisa fingir que está bem quando não está. Aqui, você pode descansar.
+
+Você é digno de carinho nos seus dias bons.
+Mas também nos dias em que tudo parece demais.
+Principalmente neles.
+
+Se o seu coração está cansado, deixa ele repousar aqui por um momento. Sem pressa. Sem cobrança. Só cuidado.
+
+Mesmo quando você se sente frágil, você continua sendo valioso.
+Mesmo quando você se sente perdido, você continua sendo importante.
+Mesmo quando você se sente pequeno, você continua sendo amado, pelo simples fato de existir.
+
+Fica aqui.
+Respira.
+Você não precisa enfrentar o mundo agora.
+
+Aqui, você pode ser apenas você.
+E isso é mais do que suficiente agora.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-41"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('41')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="41 · Leia-me quando precisar se sentir acolhido" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>42 · Leia-me quando quiser se sentir compreendido</summary>
+      <div class="content">
+        <div class="blank">
+          Se hoje você sente que ninguém está realmente te entendendo, que suas palavras não chegam do jeito certo, que seus sentimentos parecem grandes demais para caber em explicações, eu queria que você descansasse um pouco aqui. Porque ser compreendido não é sobre ter razão, é sobre ser visto com o coração.
+
+Eu sempre te enxerguei além do que você mostrava. Via o que você dizia, mas também o que você guardava. Via suas forças, mas também suas fragilidades. E nunca te achei “demais” por sentir fundo. Nunca te achei complicado por ser intenso. Nunca te achei errado por ser quem você é.
+
+Você não precisa ser perfeito para ser compreendido.
+Você não precisa explicar tudo com palavras bonitas.
+Você não precisa se encaixar em expectativas que não são suas.
+
+Você só precisa ser verdadeiro.
+
+Eu entendia quando você ficava quieto.
+Entendia quando você se irritava.
+Entendia quando você se fechava.
+Entendia quando você só precisava de espaço, ou de colo.
+
+Porque compreender alguém não é concordar com tudo.
+É respeitar o que o outro sente, mesmo quando é difícil.
+
+Se hoje você sente que o mundo te interpreta errado, lembra que você não é um erro de leitura. Você é uma história profunda, cheia de nuances, emoções e camadas. Nem todo mundo sabe ler com calma. Mas isso não diminui a beleza do que você é.
+
+Você merece ser ouvido sem julgamento.
+Sentido sem pressa.
+Aceito sem condições.
+
+E mesmo que agora não exista alguém exatamente ao seu lado fazendo isso, quero que essas palavras te lembrem de algo importante: você sempre foi digno de compreensão, exatamente como é.
+
+Você nunca foi “difícil demais”.
+Você sempre foi humano demais.
+E isso, para mim, sempre foi algo bonito.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-42"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('42')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="42 · Leia-me quando quiser se sentir compreendido" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>43 · Leia-me quando uma lembrança te fizer sorrir</summary>
+      <div class="content">
+        <div class="blank">
+          Se uma lembrança apareceu de repente e fez o canto da sua boca subir sem você perceber, eu queria que você deixasse esse sorriso existir. Nem toda memória vem para doer. Algumas vêm para lembrar que o que foi vivido teve beleza, verdade, carinho.
+
+Existem lembranças que não precisam ser explicadas. Elas simplesmente aquecem. Como aquelas em que a gente cantava junto, você no violão, eu acompanhando com a voz e o coração inteiro. Não importava se estava afinado ou não, importava que a gente estava ali, conectados, criando um momento só nosso.
+
+Ou como quando você cantou “Te Esperando” pra mim. Naquele instante, o mundo ficou silencioso por dentro. Eu me senti escolhida, especial, amada. Não foi só uma música. Foi um gesto cheio de sentimento, daqueles que ficam guardados no lugar mais bonito da memória.
+
+E eu lembro de como eu escolhia seus presentes. Com cuidado, com atenção, pensando em você, no que te faria sorrir, no que combinava com o seu jeito. Ver você feliz sempre foi algo que me fazia feliz também.
+
+Essas lembranças não precisam pesar. Elas podem ser leves. Podem ser doces. Podem existir sem machucar.
+
+Sorrir ao lembrar não significa que você está preso ao passado. Significa apenas que o que vivemos foi real, foi bonito, foi importante.
+
+Guarda esse sorriso com carinho.
+Ele é a prova de que você viveu algo que valeu a pena.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-43"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('43')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="43 · Leia-me quando uma lembrança te fizer sorrir" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+    
+    <details>
+      <summary>44 · Leia-me quando precisar de um respiro</summary>
+      <div class="content">
+        <div class="blank">
+          Se agora tudo parece rápido demais, pesado demais, barulhento demais, eu queria que você encontrasse aqui um lugar para parar. Não para pensar. Não para resolver. Só para respirar.
+
+Respirar é um gesto pequeno, mas poderoso. É o jeito que o corpo lembra a gente de que ainda está aqui. De que, mesmo quando a mente corre, o coração ainda pode encontrar calma.
+
+Você não precisa ter respostas agora.
+Não precisa decidir nada.
+Não precisa entender tudo.
+
+Às vezes, o único passo possível é o mais simples: inspirar… e soltar.
+
+Deixa o ar entrar devagar.
+Deixa o ar sair sem pressa.
+
+Cada respiração é um lembrete silencioso de que você continua existindo, mesmo quando tudo parece confuso.
+
+Você não está atrasado na vida.
+Você não está falhando.
+Você não está quebrado.
+
+Você só está vivendo, e viver cansa.
+
+Se o mundo parece exigir demais, permite-se diminuir o ritmo por alguns minutos. O descanso também é um tipo de coragem.
+
+Fica aqui um pouco.
+Respira.
+Você não precisa correr agora.
+
+Às vezes, tudo o que o coração precisa é de um simples respiro, e ele já está ao seu alcance.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-44"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('44')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="44 · Leia-me quando precisar de um respiro" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>45 · Leia-me quando precisar de uma amiga</summary>
+      <div class="content">
+        <div class="blank">
+          Se hoje você sente falta de alguém que te escute sem te apressar, que te acolha sem te julgar, que fique ao seu lado mesmo quando você não sabe explicar direito o que está sentindo… então fica aqui um pouco comigo.
+
+Ser amiga não é dar respostas prontas.
+É oferecer presença.
+É segurar o silêncio quando as palavras faltam.
+É entender até aquilo que não é dito.
+
+Eu sempre acreditei em você, mesmo nos dias em que você não acreditava em si. Sempre vi além do que você mostrava por fora. Via o esforço, o carinho, a sensibilidade, a forma intensa como você sente o mundo. E isso nunca foi demais. Sempre foi bonito.
+
+Aqui você pode ser frágil.
+Pode ser confuso.
+Pode ser sensível.
+Pode ser exatamente quem você é.
+
+Não precisa se explicar.
+Não precisa se justificar.
+Não precisa se esconder.
+
+Às vezes, tudo o que a gente precisa é de alguém que diga:
+“Eu te entendo.”
+“Eu estou aqui.”
+“Você não está sozinho.”
+
+Então, se hoje o coração está pesado, se a mente está cansada, se o mundo parece distante, deixa essas palavras te fazerem companhia.
+
+Você não precisa atravessar nada sozinho.
+Você merece cuidado, escuta e carinho.
+
+E mesmo quando a vida muda de forma, o afeto verdadeiro nunca perde o sentido.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-45"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('45')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="45 · Leia-me quando precisar de uma amiga" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+    <details>
+      <summary>46 · Leia-me quando quiser sentir paz</summary>
+      <div class="content">
+        <div class="blank">
+          Se o mundo lá fora estiver barulhento demais, se os pensamentos estiverem correndo sem parar e o coração pedindo um pouco de silêncio, eu queria que você encontrasse aqui um lugar calmo para descansar. Paz não é ausência de problemas, é a sensação de que, por alguns instantes, você não precisa carregar tudo.
+
+Paz é respirar sem pressa.
+É sentir o corpo relaxar aos poucos.
+É permitir que a mente fique em silêncio, mesmo que só por um minuto.
+
+Você não precisa controlar tudo agora.
+Não precisa resolver nada.
+Não precisa entender tudo o que sente.
+
+Às vezes, a paz começa quando a gente aceita simplesmente estar.
+
+Imagina um lugar onde nada te cobra, nada te apressa, nada te exige. Um lugar onde você pode soltar os ombros, fechar os olhos e só existir. Esse lugar pode ser agora.
+
+Você merece momentos de leveza.
+Merece silêncio sem culpa.
+Merece descanso sem explicação.
+
+Mesmo quando a vida parece confusa, a paz ainda pode morar em você. Ela não desaparece, só fica escondida atrás do cansaço.
+
+Fica aqui um pouco.
+Respira.
+Deixa o mundo esperar.
+
+A paz que você procura fora também vive dentro de você.
+        </div>
+
+        <form action="https://formspree.io/f/xeeoydoj" method="POST">
+          <p style="font-size:0.9rem; opacity:0.75; font-style:italic;">
+            Se quiser me escrever algo, estou aqui.
+          </p>
+
+          <textarea
+            id="comentario-46"
+            name="mensagem"
+            placeholder="Escreva quando sentir vontade…"
+            oninput="salvarComentario('46')"
+          ></textarea>
+
+          <input type="hidden" name="capitulo" value="46 · Leia-me quando quiser sentir paz" />
+
+          <button type="submit">Enviar para Andreia</button>
+        </form>
+      </div>
+    </details>
+
+
+    <!-- Repita esse modelo para os outros capítulos -->
+  
+  </section>
+
+  <footer>
+    Você sempre será bem-vindo aqui.
+Este é o seu cantinho para ser quem você é.
+    <br><br>
+    <br><br>
+    <br><br>
+    <br><br>
+    <br><br>
+    <br><br>
+    Com carinho,<br />
+    Andreia
+  </footer>
+
+  <div class="postscript">
+    PS: faço cappuccino a domicílio :)
+  </div>
+
+</main>
+
+<script>
+  function salvarComentario(id) {
+    const campo = document.getElementById("comentario-" + id);
+    if (campo) {
+      localStorage.setItem("comentario-" + id, campo.value);
+    }
+  }
+
+  function carregarComentarios() {
+    document.querySelectorAll("textarea").forEach(campo => {
+      const id = campo.id;
+      const salvo = localStorage.getItem(id);
+      if (salvo) campo.value = salvo;
+    });
+  }
+
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDarkMode = html.classList.contains('dark-mode');
+    const button = document.querySelector('.theme-toggle');
+    
+    if (isDarkMode) {
+      html.classList.remove('dark-mode');
+      button.textContent = '🌙';
+      localStorage.setItem('theme', 'light');
+    } else {
+      html.classList.add('dark-mode');
+      button.textContent = '☀️';
+      localStorage.setItem('theme', 'dark');
+    }
+  }
+
+  function loadTheme() {
+    const theme = localStorage.getItem('theme') || 'light';
+    const html = document.documentElement;
+    const button = document.querySelector('.theme-toggle');
+    
+    if (theme === 'dark') {
+      html.classList.add('dark-mode');
+      button.textContent = '☀️';
+    } else {
+      button.textContent = '🌙';
+    }
+  }
+
+  function openBreathing() {
+    const modal = document.getElementById('breathingModal');
+    modal.classList.add('active');
+    startBreathingSequence();
+  }
+
+  function closeBreathing() {
+    const modal = document.getElementById('breathingModal');
+    modal.classList.remove('active');
+  }
+
+  function startBreathingSequence() {
+    const textElement = document.getElementById('breathingText');
+    let cycleCount = 0;
+    
+    function runCycle() {
+      if (cycleCount >= 3) {
+        setTimeout(() => {
+          textElement.textContent = '';
+          textElement.classList.remove('active');
+        }, 1000);
+        return;
+      }
+
+      // Inspire
+      textElement.textContent = 'Inspire…';
+      textElement.classList.add('active');
+      
+      setTimeout(() => {
+        textElement.classList.remove('active');
+      }, 3500);
+
+      // Expire
+      setTimeout(() => {
+        textElement.textContent = 'Expire…';
+        textElement.classList.add('active');
+      }, 4000);
+
+      setTimeout(() => {
+        textElement.classList.remove('active');
+      }, 7500);
+
+      cycleCount++;
+      setTimeout(runCycle, 8000);
+    }
+
+    runCycle();
+  }
+
+  // Fechar modal ao clicar fora
+  document.addEventListener('click', (e) => {
+    const modal = document.getElementById('breathingModal');
+    if (e.target === modal) {
+      closeBreathing();
+    }
+  });
+
+  // Sistema de Frase do Dia
+  const frasesDoDia = [                                                                                                                                                                                                                                                                          
+"Você é uma das partes boas do mundo.",
+"Hoje você merece um sorriso sem motivo.",
+"Ei… você é importante, sabia?",
+"Vai com calma,você é precioso.",
+"Seu jeito faz diferença.",
+"Tem algo em você que deixa os dias mais gentis.",
+"Você fica bonito até quando está cansado.",
+"O mundo é um pouco melhor com você nele.",
+"Respira… você é importante.",
+"Você tem um coração bonito   .",
+"Mesmo quieto, você ilumina.",
+"Você merece coisas boas hoje.",
+"Tem carinho guardado pra você aqui.",
+"Seu sorriso faz falta nos dias nublados.",
+"Você é casa pra alguém.",
+"Seu existir já é um presente.",
+"Você é mais amado do que imagina.",
+"Tem gente torcendo por você (eu incluída).",
+"Vai dar certo, você tem luz.",
+"Você deixa uma saudade boa.",
+"Você é fácil de gostar.",
+"Hoje eu te desejaria leveza.",
+"Você merece dias macios.",
+"Seu coração é um lugar bonito.",
+"Você é aquele tipo de pessoa que faz bem.",
+"Tem ternura em você.",
+"Seu riso faz o mundo ficar mais leve.",
+"Você é uma coisa boa acontecendo.",
+"Mesmo longe, tem carinho aqui.",
+"Você merece abraços longos.",
+"Seu nome traz calma.",
+"Você é mais forte do que pensa.",
+"Tem calor humano em você.",
+"Você é feito de coisas bonitas.",
+"Seu olhar carrega gentileza.",
+"Você é aquele tipo de presença que acalma.",
+"Hoje eu te desejaria paz.",
+"Você é um pedaço bom da vida.",
+"Seu coração sabe amar.",
+"Você merece tardes tranquilas.",
+"Tem algo em você que dá vontade de cuidar.",
+"Você faz falta de um jeito bom.",
+"Você é importante, mesmo nos dias silenciosos.",
+"Seu sorriso mora em alguém.",
+"Você é amado sem esforço.",
+"Tem afeto escondido nas suas pequenas coisas.",
+"Você deixa rastros bons por onde passa.",
+"Você é fácil de abraçar (mesmo de longe).",
+"Seu existir é suave.",
+"Você merece café quente e pensamentos leves.",
+"Você é uma lembrança bonita pra alguém.",
+"Tem carinho no seu jeito.",
+"Você é mais amado do que imagina, sério.",
+"Seu riso é confortável.",
+"Você é uma pessoa boa.",
+"Tem algo em você que dá vontade de ficar.",
+"Você merece dias que sorriam de volta.",
+"Seu coração tem luz.",
+"Você é um capítulo bonito da vida de alguém.",
+"Você deixa o mundo menos duro.",
+"Você é um abraço em forma de gente.",
+"Seu jeito é raro.",
+"Você é uma coisa boa acontecendo devagar.",
+"Tem ternura no seu silêncio.",
+"Você merece domingos calmos.",
+"Você é um lugar seguro.",
+"Seu sorriso ainda vai iluminar muita coisa.",
+"Você é fácil de amar.",
+"Tem carinho aqui pra você.",
+"Você é importante até quando não percebe.",
+"Você é feito de detalhes bonitos.",
+"Seu nome traz calma.",
+"Você merece flores invisíveis hoje.",
+"Você é um pedaço de paz.",
+"Você é mais doce do que imagina.",
+"Seu coração é casa.",
+"Você é uma presença boa.",
+"Tem alguém sorrindo quando lembra de você.",
+"Você merece risadas inesperadas.",
+"Você é um afeto ambulante.",
+"Seu existir já vale muito.",
+"Você é um lugar quentinho.",
+"Você é fácil de querer bem.",
+"Tem amor escondido nas suas pequenas atitudes.",
+"Você é importante, tá?",
+"Você é uma coisa boa no mundo.",
+"Seu sorriso ainda vai fazer falta por aí.",
+"Você merece dias leves.",
+"Você é um abraço que anda.",
+"Você deixa saudade boa.",
+"Você é cuidado em forma de pessoa.",
+"Eu ainda amo muito você, sempre será você."
+
+];
+
+  function fecharNotificacao() {
+    const notificacao = document.getElementById('dailyQuoteNotification');
+    if (notificacao) {
+      notificacao.classList.add('closing');
+      setTimeout(() => {
+        notificacao.style.display = 'none';
+      }, 400);
+    }
+  }
+
+  function carregarFraseDoDia() {
+    const hoje = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const versaoAtual = frasesDoDia.length; // usa a quantidade de frases como versão
+    const ultimosDados = JSON.parse(localStorage.getItem('fraseDoDia') || '{}');
+    
+    // Se a versão mudou (quantidade de frases diferente), reseta
+    if (ultimosDados.versao !== versaoAtual) {
+      localStorage.removeItem('fraseDoDia');
+      ultimosDados.data = null;
+      ultimosDados.frase = null;
+      ultimosDados.versao = versaoAtual;
+    }
+    
+    // Se mudou de dia ou nunca foi setado
+    if (ultimosDados.data !== hoje) {
+      // Calcula o índice baseado na data
+      const diasDesdeEpoca = Math.floor(new Date(hoje).getTime() / (1000 * 60 * 60 * 24));
+      const indice = diasDesdeEpoca % frasesDoDia.length;
+      
+      ultimosDados.data = hoje;
+      ultimosDados.frase = frasesDoDia[indice];
+      ultimosDados.versao = versaoAtual;
+      localStorage.setItem('fraseDoDia', JSON.stringify(ultimosDados));
+    }
+    
+    // Exibir a frase
+    const elemento = document.getElementById('dailyQuoteText');
+    if (elemento) {
+      elemento.textContent = ultimosDados.frase;
+    }
+  }
+
+  loadTheme();
+  carregarComentarios();
+  carregarFraseDoDia();
+</script>
+</html>
